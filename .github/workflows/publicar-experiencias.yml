@@ -1,4 +1,3 @@
-
 name: Publicar experiencias autorizadas
 
 on:
@@ -8,6 +7,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: publicar-experiencias
+  cancel-in-progress: false
+
 jobs:
   publicar:
     runs-on: ubuntu-latest
@@ -16,7 +19,7 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Validar y actualizar experiencias públicas
+      - name: Validar y acumular experiencias públicas
         env:
           EXPERIENCIAS_JSON: ${{ github.event.client_payload.experiencias }}
         run: |
@@ -31,26 +34,54 @@ jobs:
           if not isinstance(data, list):
               raise SystemExit("El contenido debe ser una lista JSON.")
 
-          allowed = {
+          allowed = [
               "titulo", "resumen", "historia",
               "tipo", "metodologia", "unidad"
-          }
+          ]
 
-          clean = []
-          for item in data:
+          def clean_record(item):
               if not isinstance(item, dict):
                   raise SystemExit("Registro inválido.")
+              return {key: str(item.get(key, "") or "") for key in allowed}
 
-              clean.append({
-                  key: str(item.get(key, ""))
-                  for key in allowed
-              })
+          path = Path("data/experiencias.json")
+          path.parent.mkdir(exist_ok=True)
 
-          Path("data").mkdir(exist_ok=True)
-          Path("data/experiencias.json").write_text(
-              json.dumps(clean, ensure_ascii=False, indent=2) + "\n",
+          if path.exists():
+              existing = json.loads(path.read_text(encoding="utf-8"))
+              if not isinstance(existing, list):
+                  raise SystemExit("El archivo público existente no contiene una lista.")
+          else:
+              existing = []
+
+          records = [clean_record(item) for item in existing]
+          positions = {
+              (
+                  item["titulo"].strip().casefold(),
+                  item["unidad"].strip().casefold(),
+                  item["tipo"].strip().casefold()
+              ): index
+              for index, item in enumerate(records)
+          }
+
+          for item in data:
+              record = clean_record(item)
+              key = (
+                  record["titulo"].strip().casefold(),
+                  record["unidad"].strip().casefold(),
+                  record["tipo"].strip().casefold()
+              )
+              if key in positions:
+                  records[positions[key]] = record
+              else:
+                  positions[key] = len(records)
+                  records.append(record)
+
+          path.write_text(
+              json.dumps(records, ensure_ascii=False, indent=2) + "\n",
               encoding="utf-8"
           )
+          print(f"Total de experiencias públicas acumuladas: {len(records)}")
           PY
 
       - name: Guardar cambios
@@ -58,5 +89,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/experiencias.json
-          git diff --cached --quiet || git commit -m "Actualizar experiencias públicas"
+          git diff --cached --quiet || git commit -m "Acumular experiencias públicas autorizadas"
           git push
