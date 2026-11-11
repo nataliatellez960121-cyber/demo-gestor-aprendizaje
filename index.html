@@ -1,125 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Tablero demostrativo del Gestor de Aprendizaje Experiencial de la Universidad de La Sabana.">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Historias públicas autorizadas de aprendizaje experiencial de la Universidad de La Sabana.">
 <title>Gestor de Aprendizaje Experiencial | JAX</title>
 <style>
-:root{--navy:#00205b;--blue:#174a8b;--gold:#e8b323;--ink:#1d2b42;--muted:#68778d;--bg:#f3f6fb;--line:#e4eaf2;--white:#fff;--green:#16794b;--amber:#a96509;--red:#a43e46}
+:root{--navy:#00205b;--blue:#174a8b;--gold:#e8b323;--ink:#1d2b42;--muted:#68778d;--bg:#f3f6fb;--line:#e4eaf2;--white:#fff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
-.shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
-aside{background:var(--navy);color:white;padding:26px 18px;display:flex;flex-direction:column;gap:28px}
+.shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh}aside{background:var(--navy);color:white;padding:26px 18px;display:flex;flex-direction:column;gap:28px}
 .brand{padding:4px 10px 22px;border-bottom:1px solid #ffffff30}.brand-mark{font-size:11px;letter-spacing:2px;color:#c9d8f2;font-weight:700}.brand h1{font-size:20px;line-height:1.25;margin:12px 0 5px}.brand p{font-size:12px;color:#d3def0;margin:0}
-nav{display:grid;gap:7px}nav button{border:0;background:transparent;color:#dbe5f5;text-align:left;padding:12px 13px;border-radius:9px;font-size:14px;cursor:pointer}nav button.active,nav button:hover{background:#ffffff1b;color:white}nav span{display:inline-block;width:24px}
-.side-note{margin-top:auto;background:#ffffff12;border:1px solid #ffffff25;padding:13px;border-radius:10px;font-size:12px;line-height:1.5;color:#dce6f5}
-main{min-width:0}.topbar{background:white;border-bottom:1px solid var(--line);padding:15px 30px;display:flex;align-items:center;justify-content:space-between;gap:15px}.crumb{font-size:13px;color:var(--muted)}.top-right{font-size:12px;color:var(--muted)}
-.content{max-width:1440px;margin:auto;padding:28px 30px 50px}.heading{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px}.eyebrow{font-size:11px;letter-spacing:1.5px;color:var(--blue);font-weight:800;text-transform:uppercase}.heading h2{font-size:27px;margin:7px 0 5px;color:var(--navy)}.heading p{margin:0;color:var(--muted);font-size:14px}.demo{background:#fff8e7;color:#865d0b;border:1px solid #f2dfad;border-radius:20px;padding:8px 12px;font-size:11px;font-weight:700;white-space:nowrap}
-.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:white;color:var(--navy);padding:10px 14px;border-radius:8px;font-weight:650;font-size:12px;cursor:pointer}.btn.primary{background:var(--navy);color:white;border-color:var(--navy)}.btn:hover{filter:brightness(.96)}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}.kpi{background:white;border:1px solid var(--line);border-radius:12px;padding:18px}.kpi .label{font-size:12px;color:var(--muted)}.kpi .value{font-size:28px;font-weight:750;color:var(--navy);margin:9px 0 5px}.kpi .hint{font-size:11px;color:var(--muted)}
-.panel{background:white;border:1px solid var(--line);border-radius:12px;margin-top:16px;overflow:hidden}.panel-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:15px}.panel-head h3{margin:0;font-size:15px;color:var(--navy)}.panel-head p{margin:4px 0 0;font-size:11px;color:var(--muted)}
+nav{display:grid;gap:7px}nav button{border:0;background:transparent;color:#dbe5f5;text-align:left;padding:12px 13px;border-radius:9px;font-size:14px;cursor:pointer}nav button.active,nav button:hover{background:#ffffff1b;color:white}nav span{display:inline-block;width:24px}.side-note{margin-top:auto;background:#ffffff12;border:1px solid #ffffff25;padding:13px;border-radius:10px;font-size:12px;line-height:1.5;color:#dce6f5}
+main{min-width:0}.topbar{background:white;border-bottom:1px solid var(--line);padding:15px 30px;display:flex;justify-content:space-between;gap:15px}.content{max-width:1440px;margin:auto;padding:28px 30px 50px}.heading{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px}.eyebrow{font-size:11px;letter-spacing:1.5px;color:var(--blue);font-weight:800;text-transform:uppercase}.heading h2{font-size:27px;margin:7px 0 5px;color:var(--navy)}.heading p{margin:0;color:var(--muted);font-size:14px}
+.status{background:#e7f5ed;color:#16794b;border-radius:20px;padding:8px 12px;font-size:11px;font-weight:700;white-space:nowrap}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}.kpi,.panel,.detail{background:white;border:1px solid var(--line);border-radius:12px}.kpi{padding:18px}.kpi .label{font-size:12px;color:var(--muted)}.kpi .value{font-size:28px;font-weight:750;color:var(--navy);margin:9px 0 5px}.kpi .hint{font-size:11px;color:var(--muted)}
+.panel{margin-top:16px;overflow:hidden}.panel-head{padding:17px 19px;border-bottom:1px solid var(--line)}.panel-head h3{margin:0;font-size:15px;color:var(--navy)}.panel-head p{margin:4px 0 0;font-size:11px;color:var(--muted)}
 .filters{display:flex;gap:9px;flex-wrap:wrap;padding:14px 18px}.filters input,.filters select{border:1px solid var(--line);border-radius:8px;padding:10px 11px;font-size:12px;background:white;color:var(--ink)}.filters input{min-width:220px;flex:1}
-table{width:100%;border-collapse:collapse}th{text-align:left;background:#f8fafd;color:#64738a;font-size:10px;text-transform:uppercase;letter-spacing:.7px;padding:12px 16px;white-space:nowrap}td{padding:14px 16px;border-top:1px solid #edf1f6;font-size:12px;vertical-align:middle}tbody tr:hover{background:#fafcff}.story-title{font-weight:700;color:var(--navy)}.sub{font-size:11px;color:var(--muted);margin-top:4px}.pill{display:inline-block;border-radius:20px;padding:5px 9px;font-size:10px;font-weight:700;background:#eef2f8;color:#43536a;white-space:nowrap}.pill.green{background:#e7f5ed;color:var(--green)}.pill.amber{background:#fff3df;color:var(--amber)}.pill.blue{background:#eaf1fb;color:var(--blue)}
-.link{color:var(--blue);font-weight:700;border:0;background:none;cursor:pointer;font-size:12px}
-.empty{padding:30px;text-align:center;color:var(--muted);font-size:13px}
-.view{display:none}.view.active{display:block}
-.grid-two{display:grid;grid-template-columns:1.2fr .8fr;gap:15px}.metric-list{padding:17px 19px;display:grid;gap:16px}.metric-row{display:grid;grid-template-columns:145px 1fr 36px;gap:10px;align-items:center;font-size:12px}.bar{height:8px;border-radius:20px;background:#edf1f6;overflow:hidden}.bar i{display:block;height:100%;background:#315d9c;border-radius:20px}.note{padding:17px 19px;color:var(--muted);font-size:12px;line-height:1.6}
-.detail{background:white;border:1px solid var(--line);border-radius:12px;padding:22px}.detail h3{color:var(--navy);margin:8px 0}.detail .meta{color:var(--muted);font-size:12px;margin-bottom:18px}.detail p{font-size:13px;line-height:1.7}.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.detail-box{background:#f7f9fc;border-radius:9px;padding:13px}.detail-box b{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.detail-box span{font-size:13px}
+table{width:100%;border-collapse:collapse}th{text-align:left;background:#f8fafd;color:#64738a;font-size:10px;text-transform:uppercase;letter-spacing:.7px;padding:12px 16px}td{padding:14px 16px;border-top:1px solid #edf1f6;font-size:12px;vertical-align:middle}.story-title{font-weight:700;color:var(--navy)}.sub{font-size:11px;color:var(--muted);margin-top:4px}.pill{display:inline-block;border-radius:20px;padding:5px 9px;font-size:10px;font-weight:700;background:#eaf1fb;color:var(--blue)}.link{color:var(--blue);font-weight:700;border:0;background:none;cursor:pointer;font-size:12px}.empty{padding:30px;text-align:center;color:var(--muted);font-size:13px}
+.view{display:none}.view.active{display:block}.grid-two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.note{padding:17px 19px;color:var(--muted);font-size:12px;line-height:1.7}.detail{padding:22px;margin-top:16px}.detail h3{color:var(--navy);margin:8px 0}.detail .meta{color:var(--muted);font-size:12px;margin-bottom:18px}.detail p{font-size:13px;line-height:1.8;white-space:pre-line}.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.detail-box{background:#f7f9fc;border-radius:9px;padding:13px}.detail-box b{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.detail-box span{font-size:13px}
 footer{padding:20px 30px;color:#7c899b;font-size:11px;text-align:center}
 @media(max-width:900px){.shell{grid-template-columns:1fr}aside{padding:15px;gap:12px}.brand{padding-bottom:12px}.brand h1{font-size:17px}nav{display:flex;overflow:auto}nav button{white-space:nowrap}.side-note{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.grid-two{grid-template-columns:1fr}.topbar{padding:13px 18px}.content{padding:22px 17px}}
-@media(max-width:560px){.heading{display:block}.demo{display:inline-block;margin-top:13px}.kpis{gap:8px}.kpi{padding:13px}.kpi .value{font-size:23px}.table-wrap{overflow:auto}table{min-width:700px}.detail-grid{grid-template-columns:1fr}.top-right{display:none}}
-</style>
-</head>
-<body>
-<div class="shell">
-<aside>
- <div class="brand"><div class="brand-mark">UNIVERSIDAD DE LA SABANA</div><h1>Gestor de Aprendizaje Experiencial</h1><p>Jefatura de Aprendizaje Experiencial</p></div>
- <nav aria-label="Navegación principal">
-  <button class="active" data-view="dashboard"><span>▦</span>Tablero general</button>
-  <button data-view="stories"><span>▤</span>Historias de impacto</button>
-  <button data-view="analytics"><span>◫</span>Analítica</button>
-  <button data-view="architecture"><span>⌘</span>Arquitectura del sistema</button>
- </nav>
- <div class="side-note"><b>Versión demostrativa</b><br>Interfaz de presentación. Los registros y estados se conectarán a la fuente institucional en una siguiente fase.</div>
-</aside>
-<main>
- <div class="topbar"><div class="crumb">JAX / <b id="crumb">Tablero general</b></div><div class="top-right">Gestión institucional · Universidad de La Sabana</div></div>
- <div class="content">
-  <section class="view active" id="dashboard">
-   <div class="heading"><div><div class="eyebrow">Centro de gestión</div><h2>Tablero general</h2><p>Panorama de las experiencias y sus historias de impacto.</p></div><span class="demo">VISTA DEMOSTRATIVA · NO SINCRONIZADA</span></div>
-   <div class="kpis">
-    <article class="kpi"><div class="label">Historias recibidas</div><div class="value">45</div><div class="hint">Registros históricos importados a SharePoint</div></article>
-    <article class="kpi"><div class="label">En análisis piloto IA</div><div class="value">5</div><div class="hint">Muestra de validación metodológica</div></article>
-    <article class="kpi"><div class="label">Historias destacadas</div><div class="value">1</div><div class="hint">Validación JAX registrada en el piloto</div></article>
-    <article class="kpi"><div class="label">Publicaciones web</div><div class="value">—</div><div class="hint">Indicador pendiente de conexión</div></article>
-   </div>
-   <div class="grid-two">
-    <section class="panel"><div class="panel-head"><div><h3>Flujo de gestión de historias</h3><p>Estados previstos para el proceso JAX</p></div></div>
-     <div class="metric-list">
-      <div class="metric-row"><span>Recibida</span><div class="bar"><i style="width:100%"></i></div><b>—</b></div>
-      <div class="metric-row"><span>En revisión</span><div class="bar"><i style="width:68%"></i></div><b>—</b></div>
-      <div class="metric-row"><span>Requiere ajustes</span><div class="bar"><i style="width:35%"></i></div><b>—</b></div>
-      <div class="metric-row"><span>Aprobada</span><div class="bar"><i style="width:22%"></i></div><b>—</b></div>
-      <div class="metric-row"><span>Publicada</span><div class="bar"><i style="width:12%"></i></div><b>—</b></div>
-     </div>
-     <div class="note">Los valores cuantitativos por estado se mostrarán cuando se habilite la lectura controlada de SharePoint. Las barras son ilustrativas y no representan cantidades reales.</div>
-    </section>
-    <section class="panel"><div class="panel-head"><div><h3>Componentes del sistema</h3><p>Responsabilidad de cada herramienta</p></div></div>
-     <div class="note"><b>01 · Microsoft Forms</b><br>Recepción de historias por parte de profesores.<br><br><b>02 · Power Automate</b><br>Automatización del registro y enrutamiento.<br><br><b>03 · SharePoint</b><br>Base institucional privada y fuente oficial.<br><br><b>04 · Power Apps</b><br>Gestión interna de la JAX.<br><br><b>05 · GitHub Pages</b><br>Tablero demostrativo y vitrina pública de historias autorizadas.</div>
-    </section>
-   </div>
-   <section class="panel"><div class="panel-head"><div><h3>Historias del piloto</h3><p>Seguimiento de la muestra de validación</p></div><button class="link" data-go="stories">Ver todas →</button></div>
-    <div class="table-wrap"><table><thead><tr><th>Historia</th><th>Tipo</th><th>Estado piloto</th><th>Clasificación IA</th></tr></thead><tbody>
-     <tr><td><div class="story-title">Experiencia de Fisioterapia</div><div class="sub">Fundación Proyecto Unión</div></td><td>Curricular</td><td><span class="pill green">Validada JAX</span></td><td><span class="pill amber">Con potencial</span></td></tr>
-     <tr><td><div class="story-title">Proyectos de Ingeniería con aliados</div><div class="sub">Movilidad y gestión ambiental</div></td><td>Curricular</td><td><span class="pill green">Validada JAX</span></td><td><span class="pill blue">Destacada · Highlight</span></td></tr>
-     <tr><td><div class="story-title">ELT EdTech Innovation Academy</div><div class="sub">Diseño de experiencias de aprendizaje</div></td><td>Curricular</td><td><span class="pill amber">Pendiente de validación</span></td><td><span class="pill amber">Candidata a destacada</span></td></tr>
-    </tbody></table></div>
-   </section>
-  </section>
-  <section class="view" id="stories">
-   <div class="heading"><div><div class="eyebrow">Repositorio de experiencias</div><h2>Historias de impacto</h2><p>Consulta y explora los registros disponibles en esta demostración.</p></div><span class="demo">DATOS PARCIALES</span></div>
-   <section class="panel"><div class="filters"><input id="search" placeholder="Buscar por título o temática..." aria-label="Buscar historias"><select id="type"><option value="">Todos los tipos</option><option>Curricular</option><option>Co-curricular</option></select><select id="status"><option value="">Todos los estados</option><option>Validada JAX</option><option>Pendiente de validación</option></select></div>
-    <div class="table-wrap"><table><thead><tr><th>Historia</th><th>Tipo</th><th>Unidad</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="storyRows">
-     <tr data-type="Curricular" data-status="Validada JAX"><td><div class="story-title">Experiencia de Fisioterapia</div><div class="sub">Diseño de instrumentos de apoyo a niños</div></td><td>Curricular</td><td>Ciencias de la Vida y el Bienestar</td><td><span class="pill green">Validada JAX</span></td><td><button class="link" data-detail="fisioterapia">Ver ficha →</button></td></tr>
-     <tr data-type="Curricular" data-status="Validada JAX"><td><div class="story-title">Proyectos de Ingeniería con aliados</div><div class="sub">Movilidad y gestión ambiental</div></td><td>Curricular</td><td>Ingeniería</td><td><span class="pill green">Validada JAX</span></td><td><button class="link" data-detail="ingenieria">Ver ficha →</button></td></tr>
-     <tr data-type="Curricular" data-status="Pendiente de validación"><td><div class="story-title">ELT EdTech Innovation Academy</div><div class="sub">Diseño de experiencias de aprendizaje</div></td><td>Curricular</td><td>Educación</td><td><span class="pill amber">Pendiente</span></td><td><button class="link" data-detail="elt">Ver ficha →</button></td></tr>
-    </tbody></table></div><div class="note" id="count">Mostrando 3 historias del piloto. El catálogo completo se conectará a SharePoint mediante una capa de publicación autorizada.</div>
-   </section>
-   <div id="detailPanel" style="display:none;margin-top:16px"></div>
-  </section>
-  <section class="view" id="analytics">
-   <div class="heading"><div><div class="eyebrow">Seguimiento y evidencia</div><h2>Analítica</h2><p>Indicadores que estructurarán el seguimiento institucional.</p></div><span class="demo">PENDIENTE DE CONEXIÓN</span></div>
-   <div class="kpis"><article class="kpi"><div class="label">Experiencias curriculares</div><div class="value">—</div><div class="hint">Por sincronizar</div></article><article class="kpi"><div class="label">Experiencias cocurriculares</div><div class="value">—</div><div class="hint">Por sincronizar</div></article><article class="kpi"><div class="label">Con aliados externos</div><div class="value">—</div><div class="hint">Por sincronizar</div></article><article class="kpi"><div class="label">Con evidencias de impacto</div><div class="value">—</div><div class="hint">Por sincronizar</div></article></div>
-   <div class="grid-two"><section class="panel"><div class="panel-head"><h3>Dimensiones de impacto</h3></div><div class="note">La analítica considerará resultados de aprendizaje, reflexión, impacto en el entorno, participación de aliados, evidencias y posibilidad de transferencia.</div></section><section class="panel"><div class="panel-head"><h3>Fuente de información</h3></div><div class="note">SharePoint (GE_Historias) será la fuente oficial. Los indicadores se calcularán a partir de campos normalizados y registros validados.</div></section></div>
-  </section>
-  <section class="view" id="architecture">
-   <div class="heading"><div><div class="eyebrow">Diseño funcional</div><h2>Arquitectura del sistema</h2><p>Flujo propuesto para operar el Gestor de Aprendizaje Experiencial.</p></div><span class="demo">DISEÑO DE REFERENCIA</span></div>
-   <section class="panel"><div class="note">
-    <b>1. Captura · Microsoft Forms</b><br>El profesor registra la experiencia y entrega la información solicitada.<br><br>
-    <b>2. Automatización · Power Automate</b><br>El flujo identifica el tipo de experiencia y crea el registro correspondiente en SharePoint.<br><br>
-    <b>3. Repositorio institucional · SharePoint</b><br>La lista GE_Historias conserva los datos y el estado de cada historia. Es la fuente oficial, no GitHub.<br><br>
-    <b>4. Gestión interna · Power Apps</b><br>La JAX consulta, revisa, solicita ajustes, valida y cambia estados. Acceso restringido al equipo autorizado.<br><br>
-    <b>5. Publicación · GitHub Pages</b><br>Solo recibe una versión depurada de las historias aprobadas y con autorización de publicación. No debe consultar SharePoint con credenciales desde el navegador.
-   </div></section>
-   <section class="panel"><div class="panel-head"><h3>Reglas de seguridad y publicación</h3></div><div class="note">• No publicar nombres, correos, datos personales ni evaluaciones internas sin autorización.<br>• No incluir contraseñas, tokens o secretos en archivos HTML o JavaScript públicos.<br>• La publicación debe usar un conjunto de datos separado, aprobado y anonimizado cuando corresponda.<br>• Mantener la trazabilidad y el control de cambios en SharePoint y Power Apps.</div></section>
-  </section>
- </div>
- <footer>Jefatura de Aprendizaje Experiencial · Universidad de La Sabana · Prototipo funcional de navegación</footer>
-</main>
-</div>
+@media(max-width:560px){.heading{display:block}.status{display:inline-block;margin-top:13px}.kpis{gap:8px}.kpi{padding:13px}.kpi .value{font-size:23px}.detail-grid{grid-template-columns:1fr}}
+</style></head>
+<body><div class="shell"><aside>
+<div class="brand"><div class="brand-mark">UNIVERSIDAD DE LA SABANA</div><h1>Gestor de Aprendizaje Experiencial</h1><p>Jefatura de Aprendizaje Experiencial</p></div>
+<nav><button class="active" data-view="dashboard"><span>▦</span>Tablero general</button><button data-view="stories"><span>▤</span>Historias de impacto</button><button data-view="analytics"><span>◫</span>Analítica</button><button data-view="architecture"><span>⌘</span>Arquitectura</button></nav>
+<div class="side-note"><b>Vitrina pública</b><br>Solo se muestran historias incorporadas al conjunto de datos de publicación.</div>
+</aside><main><div class="topbar"><div>JAX / <b id="crumb">Tablero general</b></div><div style="font-size:12px;color:var(--muted)">Universidad de La Sabana</div></div><div class="content">
+<section class="view active" id="dashboard"><div class="heading"><div><div class="eyebrow">Centro de experiencias</div><h2>Tablero general</h2><p>Panorama de las historias de aprendizaje experiencial publicadas.</p></div><span class="status" id="syncStatus">Consultando publicaciones…</span></div>
+<div class="kpis"><article class="kpi"><div class="label">Historias publicadas</div><div class="value" id="kTotal">—</div><div class="hint">Registros visibles en la vitrina</div></article><article class="kpi"><div class="label">Curriculares</div><div class="value" id="kCurr">—</div><div class="hint">Experiencias en asignaturas</div></article><article class="kpi"><div class="label">Cocurriculares</div><div class="value" id="kCo">—</div><div class="hint">Experiencias fuera de asignatura</div></article><article class="kpi"><div class="label">Unidades académicas</div><div class="value" id="kUnits">—</div><div class="hint">Con historias publicadas</div></article></div>
+<div class="grid-two"><section class="panel"><div class="panel-head"><h3>Distribución por tipo</h3><p>Calculada desde las historias publicadas</p></div><div class="note" id="typeSummary">Cargando datos…</div></section><section class="panel"><div class="panel-head"><h3>Fuente y actualización</h3><p>Conjunto público autorizado</p></div><div class="note">La vitrina consume el archivo público <b>data/experiencias.json</b>. SharePoint permanece como repositorio institucional privado y fuente de gestión.</div></section></div>
+<section class="panel"><div class="panel-head"><h3>Últimas historias incorporadas</h3><p>Consulta las fichas disponibles</p></div><div id="recentStories" class="note">Cargando…</div></section></section>
+<section class="view" id="stories"><div class="heading"><div><div class="eyebrow">Repositorio público</div><h2>Historias de impacto</h2><p>Explora las experiencias autorizadas para publicación.</p></div></div><section class="panel"><div class="filters"><input id="search" placeholder="Buscar por título, unidad o metodología…" aria-label="Buscar historias"><select id="type"><option value="">Todos los tipos</option><option value="Curricular">Curricular</option><option value="Co-curricular">Co-curricular</option></select></div><div style="overflow:auto"><table><thead><tr><th>Historia</th><th>Tipo</th><th>Unidad</th><th>Metodología</th><th>Acción</th></tr></thead><tbody id="storyRows"><tr><td colspan="5" class="empty">Cargando historias…</td></tr></tbody></table></div><div class="note" id="count"></div></section><div id="detailPanel"></div></section>
+<section class="view" id="analytics"><div class="heading"><div><div class="eyebrow">Datos publicados</div><h2>Analítica</h2><p>Indicadores descriptivos del catálogo público.</p></div></div><div class="kpis"><article class="kpi"><div class="label">Metodologías distintas</div><div class="value" id="kMethods">—</div><div class="hint">Según registros publicados</div></article><article class="kpi"><div class="label">Unidades académicas</div><div class="value" id="kUnits2">—</div><div class="hint">Con historias publicadas</div></article><article class="kpi"><div class="label">Curriculares</div><div class="value" id="kCurr2">—</div><div class="hint">Del catálogo público</div></article><article class="kpi"><div class="label">Cocurriculares</div><div class="value" id="kCo2">—</div><div class="hint">Del catálogo público</div></article></div><div class="grid-two"><section class="panel"><div class="panel-head"><h3>Metodologías</h3></div><div class="note" id="methodSummary">Cargando…</div></section><section class="panel"><div class="panel-head"><h3>Unidades académicas</h3></div><div class="note" id="unitSummary">Cargando…</div></section></div></section>
+<section class="view" id="architecture"><div class="heading"><div><div class="eyebrow">Arquitectura</div><h2>Cómo funciona el gestor</h2><p>Separación entre gestión institucional y publicación pública.</p></div></div><section class="panel"><div class="note"><b>1. Microsoft Forms</b><br>Recepción de historias de profesores.<br><br><b>2. Power Automate</b><br>Registro, análisis y preparación de publicaciones autorizadas.<br><br><b>3. SharePoint</b><br>Repositorio institucional privado y fuente oficial.<br><br><b>4. Power Apps</b><br>Gestión interna de la Jefatura de Aprendizaje Experiencial.<br><br><b>5. GitHub Pages</b><br>Vitrina pública que consume únicamente el conjunto depurado de historias autorizadas.</div></section><section class="panel"><div class="panel-head"><h3>Reglas de publicación</h3></div><div class="note">Solo se publican historias con aprobación y autorización. No se muestran nombres de profesores, correos, análisis de IA ni datos internos de evaluación.</div></section></section>
+</div><footer>Jefatura de Aprendizaje Experiencial · Universidad de La Sabana</footer></main></div>
 <script>
+let stories=[];
 const navButtons=[...document.querySelectorAll('nav button')];
-function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));navButtons.forEach(b=>b.classList.toggle('active',b.dataset.view===id));document.getElementById('crumb').textContent=({dashboard:'Tablero general',stories:'Historias de impacto',analytics:'Analítica',architecture:'Arquitectura del sistema'})[id];}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));navButtons.forEach(b=>b.classList.toggle('active',b.dataset.view===id));document.getElementById('crumb').textContent=({dashboard:'Tablero general',stories:'Historias de impacto',analytics:'Analítica',architecture:'Arquitectura'})[id]}
 navButtons.forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
-document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.go)));
-function filterRows(){const q=document.getElementById('search').value.toLowerCase(),t=document.getElementById('type').value,s=document.getElementById('status').value;let n=0;document.querySelectorAll('#storyRows tr').forEach(r=>{const ok=r.innerText.toLowerCase().includes(q)&&(!t||r.dataset.type===t)&&(!s||r.dataset.status===s);r.style.display=ok?'':'none';if(ok)n++;});document.getElementById('count').textContent='Mostrando '+n+' historias del piloto. El catálogo completo se conectará a SharePoint mediante una capa de publicación autorizada.';}
-['search','type','status'].forEach(id=>document.getElementById(id).addEventListener('input',filterRows));
-const details={
-fisioterapia:{title:'Experiencia de Fisioterapia',meta:'Curricular · Procesos de Interacción Fisioterapéutica II',text:'Estudiantes diseñaron instrumentos de bajo costo para apoyar procesos de movilidad, estimulación y acompañamiento de niños vinculados a la Fundación Proyecto Unión. La experiencia incluyó visitas y contacto con necesidades reales.',score:'71/100',rating:'Con potencial',evidence:'13 niños participantes; tres visitas reportadas.',gap:'Demostrar cambios observables derivados del uso de los instrumentos y recoger testimonios de familias o aliados.'},
-ingenieria:{title:'Proyectos de Ingeniería con aliados',meta:'Curricular · Desarrollo Móvil y Diseño y Arquitectura de Software',text:'Estudiantes desarrollaron soluciones vinculadas con necesidades de movilidad en Chía y gestión ambiental en Zipaquirá. El relato destaca el proyecto SIAR y su continuidad en procesos de gestión ambiental de la Universidad.',score:'86/100',rating:'Destacada · Validación JAX',evidence:'Cerca de 60 estudiantes; dos proyectos invitados a un foro internacional; SIAR reportado en uso institucional.',gap:'La validación se basa en el relato documentado. La verificación externa de resultados y uso corresponde a la gestión institucional.'},
-elt:{title:'ELT EdTech Innovation Academy',meta:'Curricular · Educational Technology in Language Learning',text:'Experiencia gamificada y organizada en siete mundos de aprendizaje, con misiones y proyectos para que docentes en formación diseñen experiencias de aprendizaje mediadas por tecnología.',score:'84/100',rating:'Candidata a destacada',evidence:'Diseño por proyectos, prototipos, reflexión, autoevaluación y coevaluación.',gap:'Confirmar cuántos prototipos fueron implementados y qué cambios produjeron en los contextos educativos.'}
-};
-document.querySelectorAll('[data-detail]').forEach(b=>b.addEventListener('click',()=>{const d=details[b.dataset.detail],el=document.getElementById('detailPanel');el.style.display='block';el.innerHTML='<div class="detail"><button class="link" id="closeDetail">← Cerrar ficha</button><div class="eyebrow">Ficha de historia · piloto</div><h3>'+d.title+'</h3><div class="meta">'+d.meta+'</div><p>'+d.text+'</p><div class="detail-grid"><div class="detail-box"><b>Valoración preliminar</b><span>'+d.score+'</span></div><div class="detail-box"><b>Clasificación</b><span>'+d.rating+'</span></div><div class="detail-box"><b>Evidencias reportadas</b><span>'+d.evidence+'</span></div><div class="detail-box"><b>Pendiente / observación</b><span>'+d.gap+'</span></div></div></div>';document.getElementById('closeDetail').addEventListener('click',()=>el.style.display='none');el.scrollIntoView({behavior:'smooth',block:'start'});}));
-</script>
-</body>
-</html>
+function clean(v){return (v??'').toString().trim()}
+function countBy(key){return stories.reduce((a,x)=>{const k=clean(x[key])||'Sin dato';a[k]=(a[k]||0)+1;return a},{})}
+function render(){
+ const curr=stories.filter(x=>clean(x.tipo).toLowerCase()==='curricular').length, co=stories.filter(x=>clean(x.tipo).toLowerCase().includes('co-')).length;
+ const units=Object.keys(countBy('unidad')).filter(x=>x!=='Sin dato').length, methods=Object.keys(countBy('metodologia')).filter(x=>x!=='Sin dato').length;
+ document.getElementById('kTotal').textContent=stories.length;document.getElementById('kCurr').textContent=curr;document.getElementById('kCo').textContent=co;document.getElementById('kUnits').textContent=units;
+ document.getElementById('kUnits2').textContent=units;document.getElementById('kCurr2').textContent=curr;document.getElementById('kCo2').textContent=co;document.getElementById('kMethods').textContent=methods;
+ document.getElementById('typeSummary').textContent='Curriculares: '+curr+' · Cocurriculares: '+co;
+ document.getElementById('methodSummary').innerHTML=Object.entries(countBy('metodologia')).map(([k,v])=>'<p><b>'+esc(k)+'</b>: '+v+'</p>').join('')||'Sin datos';
+ document.getElementById('unitSummary').innerHTML=Object.entries(countBy('unidad')).map(([k,v])=>'<p><b>'+esc(k)+'</b>: '+v+'</p>').join('')||'Sin datos';
+ document.getElementById('recentStories').innerHTML=stories.slice(0,5).map((s,i)=>'<p><b>'+esc(s.titulo||'Historia sin título')+'</b><br><span style="color:#68778d">'+esc(s.unidad)+' · '+esc(s.tipo)+'</span> <button class="link" data-open="'+i+'">Ver historia →</button></p>').join('')||'Aún no hay historias públicas.';
+ renderRows();
+}
+function esc(s){return clean(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderRows(){const q=document.getElementById('search').value.toLowerCase(),t=document.getElementById('type').value;const found=stories.map((s,i)=>({...s,_i:i})).filter(s=>(!t||s.tipo===t)&&JSON.stringify(s).toLowerCase().includes(q));document.getElementById('storyRows').innerHTML=found.map(s=>'<tr><td><div class="story-title">'+esc(s.titulo||'Historia sin título')+'</div><div class="sub">'+esc(s.resumen)+'</div></td><td><span class="pill">'+esc(s.tipo)+'</span></td><td>'+esc(s.unidad)+'</td><td>'+esc(s.metodologia)+'</td><td><button class="link" data-open="'+s._i+'">Ver ficha →</button></td></tr>').join('')||'<tr><td colspan="5" class="empty">No hay historias que coincidan con la búsqueda.</td></tr>';document.getElementById('count').textContent='Mostrando '+found.length+' de '+stories.length+' historias públicas.'}
+function openStory(i){const s=stories[i];document.getElementById('detailPanel').innerHTML='<article class="detail"><button class="link" id="closeDetail">← Cerrar ficha</button><div class="eyebrow">Historia de impacto</div><h3>'+esc(s.titulo)+'</h3><div class="meta">'+esc(s.tipo)+' · '+esc(s.unidad)+' · '+esc(s.metodologia)+'</div><p><b>Resumen</b><br>'+esc(s.resumen)+'</p><p><b>La experiencia</b><br>'+esc(s.historia)+'</p></article>';document.getElementById('closeDetail').onclick=()=>document.getElementById('detailPanel').innerHTML='';document.getElementById('detailPanel').scrollIntoView({behavior:'smooth'})}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openStory(Number(b.dataset.open))});
+['search','type'].forEach(id=>document.getElementById(id).addEventListener('input',renderRows));
+fetch('./data/experiencias.json?v='+Date.now()).then(r=>{if(!r.ok)throw new Error('No se pudo leer el catálogo');return r.json()}).then(data=>{stories=Array.isArray(data)?data.filter(x=>clean(x.titulo)&&clean(x.historia)):[];document.getElementById('syncStatus').textContent='Datos públicos cargados';render()}).catch(err=>{document.getElementById('syncStatus').textContent='No fue posible cargar los datos';document.getElementById('recentStories').textContent='No se pudo consultar el catálogo público. Intenta actualizar la página.';document.getElementById('storyRows').innerHTML='<tr><td colspan="5" class="empty">No se pudo cargar el catálogo.</td></tr>'});
+</script></body></html>
