@@ -1,0 +1,79 @@
+name: Publicar experiencias autorizadas
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  publicar:
+    if: >
+      github.event.issue.user.login == 'nataliatellez960121-cyber' &&
+      startsWith(github.event.issue.title, '[GE-PUBLICAR]')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Actualizar experiencias públicas
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          body = os.environ["ISSUE_BODY"]
+          start = "<!-- GE_DATA_START -->"
+          end = "<!-- GE_DATA_END -->"
+
+          if start not in body or end not in body:
+              raise SystemExit("No se encontró el bloque de datos.")
+
+          raw = body.split(start, 1)[1].split(end, 1)[0].strip()
+          data = json.loads(raw)
+
+          if not isinstance(data, list):
+              raise SystemExit("El contenido debe ser una lista JSON.")
+
+          allowed = {
+              "titulo", "resumen", "historia",
+              "tipo", "metodologia", "unidad"
+          }
+
+          clean = []
+          for item in data:
+              if not isinstance(item, dict):
+                  raise SystemExit("Registro inválido.")
+              clean.append({
+                  key: str(item.get(key, ""))
+                  for key in allowed
+              })
+
+          Path("data").mkdir(exist_ok=True)
+          Path("data/experiencias.json").write_text(
+              json.dumps(clean, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8"
+          )
+          PY
+
+      - name: Guardar cambios
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/experiencias.json
+          git diff --cached --quiet || git commit -m "Actualizar experiencias públicas"
+          git push
+
+      - name: Cerrar solicitud de publicación
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue close "$ISSUE_NUMBER" \
+            --comment "Dataset público actualizado."
