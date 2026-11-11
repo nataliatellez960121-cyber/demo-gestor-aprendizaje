@@ -64,8 +64,13 @@ jobs:
               for index, item in enumerate(records)
           }
 
+          skipped = 0
           for item in data:
               record = clean_record(item)
+              if not all(record[field].strip() for field in ("titulo", "resumen", "historia")):
+                  skipped += 1
+                  print("Se omite un registro sin título, resumen o historia completos.")
+                  continue
               key = (
                   record["titulo"].strip().casefold(),
                   record["unidad"].strip().casefold(),
@@ -76,6 +81,8 @@ jobs:
               else:
                   positions[key] = len(records)
                   records.append(record)
+
+          print(f"Registros incompletos omitidos: {skipped}")
 
           path.write_text(
               json.dumps(records, ensure_ascii=False, indent=2) + "\n",
