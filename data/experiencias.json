@@ -1,10 +1,18 @@
 [
   {
-    "tipo": "Co-curricular",
+    "titulo": "De la teoría a la planta: la contabilidad gerencial en un entorno real",
     "resumen": "60 estudiantes del curso de Contabilidad Gerencial de la Universidad de La Sabana visitaron la planta productiva de Impersa SAS para comprender cómo los conceptos de costos se aplican en los procesos reales de una empresa. A través de la observación directa, el diálogo con directivos y operarios y una evaluación práctica en tiempo real, conectaron los conocimientos del aula con situaciones del entorno empresarial. La experiencia fortaleció sus competencias técnicas, el pensamiento crítico y el comportamiento profesional, y dio continuidad a la alianza universidad-empresa mediante una cátedra especial con directivos de la organización.",
     "historia": "En el curso de Contabilidad Gerencial de la Universidad de La Sabana, 60 estudiantes tuvieron la oportunidad de salir del aula para encontrarse con uno de los escenarios donde los conceptos contables cobran sentido: una planta de producción. La visita a Impersa SAS se convirtió en una experiencia para comprender cómo las decisiones relacionadas con los costos se reflejan en las operaciones cotidianas de una empresa.\n\nDurante el recorrido, los estudiantes observaron los procesos productivos, identificaron los elementos que intervienen en la estructura de costos y relacionaron los conceptos estudiados en clase con situaciones concretas. La aplicación del método PEPS y el reconocimiento de los costos directos e indirectos les permitieron aproximarse a los desafíos que enfrenta una organización en su gestión diaria.\n\nUno de los momentos más significativos ocurrió durante un encuentro con el gerente de la planta. Allí, los estudiantes participaron en una evaluación espontánea que puso a prueba su capacidad para interpretar lo observado y aplicar sus conocimientos en tiempo real. Este ejercicio permitió evidenciar su comprensión y abrió un espacio de conversación sobre las decisiones que se toman en el contexto empresarial.\n\nLa experiencia también puso en primer plano dimensiones que van más allá del conocimiento técnico. La responsabilidad, la disciplina, la comunicación y la ética profesional fueron aspectos fundamentales durante la interacción con los directivos y colaboradores de la organización. Los estudiantes comprendieron que el ejercicio profesional exige tanto dominio conceptual como capacidad para actuar con criterio y respeto en escenarios reales.\n\nEl aprendizaje no terminó con la visita. Posteriormente, la universidad recibió a directivos de Impersa SAS para desarrollar una cátedra especial, ampliando las conversaciones sobre la realidad empresarial y fortaleciendo el vínculo entre la academia y el sector productivo.\n\nLa valoración unánime de los estudiantes sobre el valor agregado de la experiencia reflejó la importancia de estos encuentros para comprender mejor la aplicación de los conocimientos. Así, la contabilidad gerencial dejó de ser únicamente un conjunto de conceptos y procedimientos para convertirse en una herramienta de análisis y comprensión de las decisiones organizacionales.\n\nEsta experiencia demuestra cómo el encuentro entre universidad y empresa puede enriquecer la formación profesional: cuando los estudiantes observan, preguntan, contrastan y aplican lo aprendido, el conocimiento adquiere contexto y se conecta con los desafíos del mundo real.",
+    "tipo": "Co-curricular",
     "metodologia": "Challenge Experience o Reto",
-    "unidad": "Escuela Internacional de Ciencias Económicas y Administrativas;",
-    "titulo": "De la teoría a la planta: la contabilidad gerencial en un entorno real"
+    "unidad": "Escuela Internacional de Ciencias Económicas y Administrativas;"
+  },
+  {
+    "titulo": "",
+    "resumen": "",
+    "historia": "",
+    "tipo": "Curricular",
+    "metodologia": "Aprendizaje basado en investigación",
+    "unidad": "Facultad de Comunicación;"
   }
 ]
