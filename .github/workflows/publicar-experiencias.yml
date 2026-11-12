@@ -29,10 +29,22 @@ jobs:
           from pathlib import Path
 
           raw = os.environ.get("EXPERIENCIAS_JSON", "")
+          if not raw:
+              raise SystemExit("No se recibió el contenido de experiencias.")
+
           data = json.loads(raw)
 
+          # Aceptar tanto una lista JSON como un objeto con la propiedad
+          # "experiencias". También admitir que el contenido llegue doblemente serializado.
+          if isinstance(data, str):
+              data = json.loads(data)
+          if isinstance(data, dict):
+              data = data.get("experiencias")
+          if isinstance(data, str):
+              data = json.loads(data)
+
           if not isinstance(data, list):
-              raise SystemExit("El contenido debe ser una lista JSON.")
+              raise SystemExit("El contenido de experiencias debe ser una lista JSON.")
 
           allowed = [
               "titulo", "resumen", "historia",
