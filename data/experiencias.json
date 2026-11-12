@@ -142,5 +142,13 @@
     "tipo": "Curricular",
     "metodologia": "Técnicas: Design Thinking, Storytelling, Aula Invertida, Gamificación",
     "unidad": "Facultad de Educación;"
+  },
+  {
+    "titulo": "De problema real a solución digital: liderazgo gerencial en transformación tecnológica",
+    "resumen": "Esta experiencia de aprendizaje se centró en fortalecer el criterio gerencial para liderar decisiones en contextos de transformación digital, enfocándose en la tecnología como herramienta para resolver problemas reales. Los participantes diagnosticaron brechas, priorizaron iniciativas y diseñaron soluciones digitales viables, como un Asistente de Orientación Pensional basado en IA. A través de un proceso de construcción, prueba y reflexión, desarrollaron habilidades estratégicas, pensamiento crítico y gestión de riesgos, logrando transformar oportunidades profesionales en soluciones funcionales y con criterios claros de valor y gobernanza.",
+    "historia": "En un contexto donde la transformación digital exige un liderazgo gerencial con criterio sólido, esta experiencia se diseñó para que los participantes pasaran de conocer tecnologías a decidir cómo aplicarlas efectivamente en su realidad profesional. El desafío consistió en diagnosticar brechas y oportunidades mediante simuladores y consultorías estratégicas, priorizando iniciativas que generaran valor real. En particular, el equipo de Porvenir identificó una necesidad en la orientación pensional y desarrolló un Asistente basado en inteligencia artificial. Este asistente fue construido como un producto mínimo viable (MVP) funcional, sometido a pruebas en diversos escenarios para validar su capacidad de capturar información, identificar datos faltantes y ajustar respuestas ante cambios críticos, como las semanas cotizadas. Más allá de la construcción técnica, los participantes reflexionaron continuamente sobre la pertinencia de la tecnología, los límites de la autonomía de la IA y la incorporación de revisión humana, descartando herramientas que no aportaban valor real. La evaluación combinó retroalimentación docente, consultoría personalizada y experimentación, promoviendo un aprendizaje que integró criterios gerenciales, gestión de riesgos y gobernanza tecnológica. Al finalizar, los participantes no solo comprendieron nuevas tecnologías, sino que vivieron el proceso de transformar un problema organizacional en una solución digital concreta, con un enfoque estratégico centrado en el valor y la toma de decisiones informada.",
+    "tipo": "Co-curricular",
+    "metodologia": "Challenge Experience o Reto",
+    "unidad": "Instituto Forum;"
   }
 ]
