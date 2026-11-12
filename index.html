@@ -10,6 +10,28 @@
 .countline{font-size:11px;color:var(--gray);margin:0 0 14px}.manifesto{margin-top:90px;background:var(--blue);color:white;padding:clamp(28px,5vw,60px);display:grid;grid-template-columns:1fr 1fr;gap:30px}.manifesto h2{font-size:clamp(32px,5vw,58px);letter-spacing:-.06em;line-height:.98;margin:8px 0;color:var(--yellow)}.manifesto p{font-size:13px;line-height:1.8;color:#d9e3f1}.principles{display:grid;gap:12px}.principle{border-top:1px solid #ffffff50;padding:13px 0;display:grid;grid-template-columns:45px 1fr;gap:12px}.principle b{font-size:25px;color:var(--yellow)}.principle span{font-size:12px;line-height:1.6;color:#e4eaf4}
 .modal-bg{position:fixed;inset:0;background:#081329e8;z-index:5;display:none;align-items:center;justify-content:center;padding:18px}.modal-bg.open{display:flex}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:var(--cream)}.modal-head{background:var(--yellow);padding:30px;position:relative}.modal-head h2{font-size:clamp(27px,5vw,45px);line-height:1;letter-spacing:-.06em;color:var(--blue);margin:12px 40px 12px 0}.modal-head small{font-size:10px;font-weight:900;text-transform:uppercase}.x{position:absolute;right:16px;top:16px;border:0;background:var(--blue);color:white;width:35px;height:35px;font-size:22px}.modal-body{padding:25px 30px}.modal-body h4{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#68758a}.modal-body p{font-size:13px;line-height:1.85;white-space:pre-line;color:#344054}.modal-body .summary{font-size:16px;color:var(--blue);font-weight:700}
 footer{background:var(--blue);color:#d8e1ef;text-align:center;padding:27px;font-size:10px;letter-spacing:.5px}footer b{color:var(--yellow)}
+/* Movimiento sutil para que el archivo se sienta vivo */
+.hero>div:first-child{animation:heroReveal .9s cubic-bezier(.2,.75,.25,1) both}
+.hero h1{animation:titleSettle 1.1s .15s cubic-bezier(.2,.75,.25,1) both}
+.hero h1:after{content:"✦";display:inline-block;color:var(--coral);font-size:.22em;vertical-align:top;margin:0 0 0 12px;animation:twinkle 2.2s ease-in-out infinite}
+@keyframes heroReveal{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes titleSettle{from{letter-spacing:-.11em;opacity:.45}to{letter-spacing:-.075em;opacity:1}}
+@keyframes twinkle{0%,100%{transform:rotate(0) scale(.8);opacity:.55}50%{transform:rotate(45deg) scale(1.35);opacity:1}}
+.feature-art:before{animation:orbitPulse 5s ease-in-out infinite}
+.feature-art:after{animation:starFloat 4s ease-in-out infinite}
+@keyframes orbitPulse{0%,100%{transform:scale(.94);opacity:.55}50%{transform:scale(1.06);opacity:1}}
+@keyframes starFloat{0%,100%{transform:rotate(-15deg) scale(.96)}50%{transform:rotate(8deg) scale(1.04)}}
+.card{animation:cardArrive .65s cubic-bezier(.2,.75,.25,1) both}
+.card:nth-child(2){animation-delay:.06s}.card:nth-child(3){animation-delay:.12s}.card:nth-child(4){animation-delay:.18s}.card:nth-child(5){animation-delay:.24s}.card:nth-child(6){animation-delay:.3s}
+@keyframes cardArrive{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.read,.black-btn{transition:transform .2s,box-shadow .2s,background .2s}
+.read:hover,.black-btn:hover{transform:translateY(-3px);box-shadow:0 7px 0 #00205b25}
+.chip{transition:transform .2s,background .2s,color .2s}
+.chip:hover{transform:translateY(-2px)}
+.nav a{transition:color .2s,border-color .2s}
+.nav a:hover{color:var(--yellow);border-color:var(--yellow)}
+.marquee div{will-change:transform}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 @media(max-width:800px){.hero{grid-template-columns:1fr;margin-top:48px}.hero-side{border-left:0;border-top:1px solid #ffffff50;padding:15px 0}.feature{grid-template-columns:1fr}.feature-art{min-height:190px}.card,.card:nth-child(5n+2),.card:nth-child(5n+3){grid-column:span 6}.manifesto{grid-template-columns:1fr}}
 @media(max-width:540px){.top{font-size:8px}.mast{padding:18px 20px 48px}.hero h1{font-size:58px}.hero{margin-top:48px}.hero-side strong{font-size:34px}main{padding:38px 18px 55px}.section-top{display:block}.section-top p{max-width:none}.card,.card:nth-child(5n+2),.card:nth-child(5n+3){grid-column:1/-1;min-height:260px}.tools input{min-width:100%}.tools select{flex:1}.manifesto{margin-top:55px;padding:26px 20px}.modal-head,.modal-body{padding:22px}}
 </style></head><body>
