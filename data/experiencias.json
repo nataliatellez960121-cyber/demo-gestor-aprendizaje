@@ -190,5 +190,13 @@
     "tipo": "Curricular",
     "metodologia": "Aprendizaje basado en problemas",
     "unidad": "Facultad de Ingeniería;"
+  },
+  {
+    "titulo": "Árbol de Conexiones: De la Teoría a la Construcción Real en Ingeniería Civil",
+    "resumen": "En la asignatura de Estructuras Metálicas, los estudiantes enfrentaron el reto de diseñar y construir un 'Árbol de Conexiones', integrando teoría, cálculo estructural y modelamiento 3D. Este proyecto permitió aplicar conceptos técnicos en un contexto real, desde el diseño hasta la construcción de cimentaciones y mezclas de concreto, fortaleciendo competencias transversales como el trabajo colaborativo y la gestión de proyectos. La experiencia conectó el aula con la práctica profesional, generando un legado tangible en el campus y promoviendo la reflexión sobre los desafíos y aprendizajes del proceso.",
+    "historia": "La experiencia del Árbol de Conexiones surgió como una tarea académica en la asignatura de Estructuras Metálicas, donde los estudiantes debían diseñar y modelar en 3D una estructura que ilustrara el funcionamiento de las uniones metálicas. Lo que comenzó como un ejercicio teórico se transformó en un proyecto integral que involucró desde el cálculo estructural hasta la construcción real de cimentaciones y mezclas de concreto. Los estudiantes participaron activamente en todas las etapas, desde la propuesta y modelamiento digital hasta la ejecución en obra, enfrentando los retos propios de un contexto real y desarrollando habilidades técnicas y transversales como la toma de decisiones, el trabajo en equipo y la gestión de proyectos. La evaluación combinó criterios académicos y prácticos, incluyendo la validación del diseño por parte de la industria, lo que reforzó la conexión entre el aprendizaje y su aplicación profesional. Además, se promovieron espacios de reflexión que permitieron a los estudiantes analizar las diferencias entre la teoría y la práctica, así como el impacto de su trabajo en el entorno universitario. El resultado fue un aprendizaje experiencial integral que no solo fortaleció conocimientos técnicos, sino que también dejó un legado permanente en el campus, evidenciando cómo un reto académico puede convertirse en una experiencia transformadora y significativa para la formación en ingeniería civil.",
+    "tipo": "Curricular",
+    "metodologia": "Aprendizaje basado en retos",
+    "unidad": "Facultad de Ingeniería;"
   }
 ]
