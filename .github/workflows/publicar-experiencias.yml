@@ -2,7 +2,7 @@ name: Publicar experiencias autorizadas
 
 on:
   repository_dispatch:
-    types: [ge_publicar_experiencias]
+    types: [ge_iniciar_sincronizacion, ge_publicar_experiencias]
 
 permissions:
   contents: write
@@ -19,8 +19,9 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Validar y acumular experiencias públicas
+      - name: Preparar experiencias públicas
         env:
+          EVENT_TYPE: ${{ github.event.action }}
           EXPERIENCIAS_JSON: ${{ github.event.client_payload.experiencias }}
         run: |
           python - <<'PY'
@@ -28,79 +29,95 @@ jobs:
           import os
           from pathlib import Path
 
-          raw = os.environ.get("EXPERIENCIAS_JSON", "")
-          if not raw:
-              raise SystemExit("No se recibió el contenido de experiencias.")
-
-          data = json.loads(raw)
-
-          # Aceptar tanto una lista JSON como un objeto con la propiedad
-          # "experiencias". También admitir que el contenido llegue doblemente serializado.
-          if isinstance(data, str):
-              data = json.loads(data)
-          if isinstance(data, dict):
-              data = data.get("experiencias")
-          if isinstance(data, str):
-              data = json.loads(data)
-
-          if not isinstance(data, list):
-              raise SystemExit("El contenido de experiencias debe ser una lista JSON.")
-
-          allowed = [
-              "titulo", "resumen", "historia",
-              "tipo", "metodologia", "unidad"
-          ]
-
-          def clean_record(item):
-              if not isinstance(item, dict):
-                  raise SystemExit("Registro inválido.")
-              return {key: str(item.get(key, "") or "") for key in allowed}
-
           path = Path("data/experiencias.json")
           path.parent.mkdir(exist_ok=True)
 
-          if path.exists():
-              existing = json.loads(path.read_text(encoding="utf-8"))
-              if not isinstance(existing, list):
-                  raise SystemExit("El archivo público existente no contiene una lista.")
-          else:
-              existing = []
+          event_type = os.environ.get("EVENT_TYPE", "")
 
-          records = [clean_record(item) for item in existing]
-          positions = {
-              (
-                  item["titulo"].strip().casefold(),
-                  item["unidad"].strip().casefold(),
-                  item["tipo"].strip().casefold()
-              ): index
-              for index, item in enumerate(records)
-          }
+          # La primera orden de cada sincronización limpia el archivo público.
+          if event_type == "ge_iniciar_sincronizacion":
+              records = []
+              print("Inicio de sincronización: se reemplazará el archivo público.")
+          elif event_type == "ge_publicar_experiencias":
+              raw = os.environ.get("EXPERIENCIAS_JSON", "")
+              if not raw:
+                  raise SystemExit("No se recibió el contenido de experiencias.")
 
-          skipped = 0
-          for item in data:
-              record = clean_record(item)
-              if not all(record[field].strip() for field in ("titulo", "resumen", "historia")):
-                  skipped += 1
-                  print("Se omite un registro sin título, resumen o historia completos.")
-                  continue
-              key = (
-                  record["titulo"].strip().casefold(),
-                  record["unidad"].strip().casefold(),
-                  record["tipo"].strip().casefold()
-              )
-              if key in positions:
-                  records[positions[key]] = record
+              data = json.loads(raw)
+              if isinstance(data, str):
+                  data = json.loads(data)
+              if isinstance(data, dict):
+                  data = data.get("experiencias")
+              if isinstance(data, str):
+                  data = json.loads(data)
+
+              if not isinstance(data, list):
+                  raise SystemExit("El contenido de experiencias debe ser una lista JSON.")
+
+              allowed = ["titulo", "resumen", "historia", "tipo", "metodologia", "unidad"]
+
+              def clean_record(item):
+                  if not isinstance(item, dict):
+                      raise SystemExit("Registro inválido.")
+                  cleaned = {}
+                  for key in allowed:
+                      value = item.get(key, "")
+                      if isinstance(value, dict):
+                          value = value.get("Value", value.get("value", ""))
+                      elif isinstance(value, list):
+                          value = ", ".join(
+                              str(v.get("Value", v.get("value", ""))) if isinstance(v, dict) else str(v)
+                              for v in value
+                          )
+                      cleaned[key] = str(value or "")
+                  return cleaned
+
+              if path.exists():
+                  existing = json.loads(path.read_text(encoding="utf-8"))
+                  if not isinstance(existing, list):
+                      raise SystemExit("El archivo público existente no contiene una lista.")
               else:
-                  positions[key] = len(records)
-                  records.append(record)
+                  existing = []
 
-          print(f"Registros incompletos omitidos: {skipped}")
+              records = [clean_record(item) for item in existing]
+              positions = {
+                  (
+                      item["titulo"].strip().casefold(),
+                      item["unidad"].strip().casefold(),
+                      item["tipo"].strip().casefold()
+                  ): index
+                  for index, item in enumerate(records)
+              }
+
+              skipped = 0
+              for item in data:
+                  record = clean_record(item)
+                  if not all(record[field].strip() for field in ("titulo", "resumen", "historia")):
+                      skipped += 1
+                      print("Se omite un registro sin título, resumen o historia completos.")
+                      continue
+
+                  key = (
+                      record["titulo"].strip().casefold(),
+                      record["unidad"].strip().casefold(),
+                      record["tipo"].strip().casefold()
+                  )
+                  if key in positions:
+                      records[positions[key]] = record
+                  else:
+                      positions[key] = len(records)
+                      records.append(record)
+
+              print(f"Registros incompletos omitidos: {skipped}")
+              print(f"Total acumulado hasta este paquete: {len(records)}")
+          else:
+              raise SystemExit(f"Tipo de evento no reconocido: {event_type}")
 
           path.write_text(
-              json.dumps(records, ensure_ascii=False, indent=2) + "\n",
+              json.dumps(records, ensure_ascii=False, indent=2) + "\\n",
               encoding="utf-8"
           )
-          print(f"Total de experiencias públicas acumuladas: {len(records)}")
+          print(f"Registros guardados: {len(records)}")
           PY
 
       - name: Guardar cambios
@@ -108,9 +125,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/experiencias.json
-          git diff --cached --quiet || git commit -m "Acumular experiencias públicas autorizadas"
-
-          # Integrar cambios que pudieron llegar a main mientras corría este flujo.
+          git diff --cached --quiet || git commit -m "Sincronizar experiencias públicas autorizadas"
           git fetch origin main
           git rebase origin/main
           git push origin HEAD:main
