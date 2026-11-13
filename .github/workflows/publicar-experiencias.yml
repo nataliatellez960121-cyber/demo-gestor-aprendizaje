@@ -11,111 +11,121 @@ concurrency:
   group: publicar-experiencias
   cancel-in-progress: false
 
+env:
+  SYNC_ID: ${{ github.event.client_payload.sync_id }}
+  LOTE_INDEX: ${{ github.event.client_payload.lote_index }}
+  TOTAL_LOTES: ${{ github.event.client_payload.total_lotes }}
+
 jobs:
   publicar:
     runs-on: ubuntu-latest
-
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Preparar experiencias públicas
-        env:
-          EVENT_TYPE: ${{ github.event.action }}
-          EXPERIENCIAS_JSON: ${{ github.event.client_payload.experiencias }}
+      - name: Validar datos del evento
         run: |
-          python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
+          if [ -z "${SYNC_ID}" ]; then
+            echo "Power Automate debe enviar client_payload.sync_id en todo evento de sincronización." >&2
+            exit 1
+          fi
+          if [ "${{ github.event.action }}" = "ge_iniciar_sincronizacion" ] && [ -z "${TOTAL_LOTES}" ]; then
+            echo "ge_iniciar_sincronizacion debe incluir client_payload.total_lotes." >&2
+            exit 1
+          fi
+          if [ "${{ github.event.action }}" = "ge_publicar_experiencias" ] && [ -z "${LOTE_INDEX}" ]; then
+            echo "ge_publicar_experiencias debe incluir client_payload.lote_index." >&2
+            exit 1
+          fi
+          echo "Evento ${{ github.event.action }} · sync_id=${SYNC_ID} · lote=${LOTE_INDEX:-N/A} · total_lotes=${TOTAL_LOTES:-N/A}"
 
-          path = Path("data/experiencias.json")
-          path.parent.mkdir(exist_ok=True)
-          event_type = os.environ.get("EVENT_TYPE", "")
+      - name: Congelar script de sincronización fuera del repositorio
+        run: cp scripts/sync_experiencias.py "$RUNNER_TEMP/sync_experiencias.py"
 
-          if event_type == "ge_iniciar_sincronizacion":
-              records = []
-              print("Inicio de sincronización: archivo público reiniciado.")
-          elif event_type == "ge_publicar_experiencias":
-              raw = os.environ.get("EXPERIENCIAS_JSON", "")
-              if not raw:
-                  raise SystemExit("No se recibió el contenido de experiencias.")
+      - name: Guardar payload del lote fuera del repositorio
+        if: github.event.action == 'ge_publicar_experiencias'
+        env:
+          PAYLOAD_JSON: ${{ toJson(github.event.client_payload) }}
+        run: echo "$PAYLOAD_JSON" > "$RUNNER_TEMP/payload.json"
 
-              data = json.loads(raw)
-              if isinstance(data, str):
-                  data = json.loads(data)
-              if isinstance(data, dict):
-                  data = data.get("experiencias")
-              if isinstance(data, str):
-                  data = json.loads(data)
-              if not isinstance(data, list):
-                  raise SystemExit("El contenido debe ser una lista JSON.")
-
-              allowed = ["titulo", "resumen", "historia", "tipo", "metodologia", "unidad"]
-
-              def clean_record(item):
-                  if not isinstance(item, dict):
-                      raise SystemExit("Registro inválido.")
-                  cleaned = {}
-                  for key in allowed:
-                      value = item.get(key, "")
-                      if isinstance(value, dict):
-                          value = value.get("Value", value.get("value", ""))
-                      elif isinstance(value, list):
-                          value = ", ".join(
-                              str(v.get("Value", v.get("value", ""))) if isinstance(v, dict) else str(v)
-                              for v in value
-                          )
-                      cleaned[key] = str(value or "")
-                  return cleaned
-
-              existing = []
-              if path.exists():
-                  existing = json.loads(path.read_text(encoding="utf-8"))
-                  if not isinstance(existing, list):
-                      raise SystemExit("El archivo público existente no contiene una lista.")
-
-              records = [clean_record(item) for item in existing]
-              positions = {
-                  (item["titulo"].strip().casefold(),
-                   item["unidad"].strip().casefold(),
-                   item["tipo"].strip().casefold()): index
-                  for index, item in enumerate(records)
-              }
-
-              skipped = 0
-              for item in data:
-                  record = clean_record(item)
-                  if not all(record[field].strip() for field in ("titulo", "resumen", "historia")):
-                      skipped += 1
-                      continue
-                  key = (record["titulo"].strip().casefold(),
-                         record["unidad"].strip().casefold(),
-                         record["tipo"].strip().casefold())
-                  if key in positions:
-                      records[positions[key]] = record
-                  else:
-                      positions[key] = len(records)
-                      records.append(record)
-
-              print(f"Registros incompletos omitidos: {skipped}")
-              print(f"Total acumulado hasta este paquete: {len(records)}")
-          else:
-              raise SystemExit(f"Tipo de evento no reconocido: {event_type}")
-
-          path.write_text(
-              json.dumps(records, ensure_ascii=False, indent=2) + "\n",
-              encoding="utf-8"
-          )
-          print(f"Registros guardados: {len(records)}")
-          PY
-
-      - name: Guardar cambios
+      - name: Cambiar a la rama de estado de sincronización (sync-state)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin sync-state >/dev/null 2>&1; then
+            git fetch origin sync-state
+            git checkout -B sync-state origin/sync-state
+          else
+            git checkout --orphan sync-state
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+          mkdir -p .sync-state
+
+      - name: Reiniciar sincronización
+        if: github.event.action == 'ge_iniciar_sincronizacion'
+        run: |
+          python3 "$RUNNER_TEMP/sync_experiencias.py" iniciar \
+            --state-dir .sync-state \
+            --sync-id "${SYNC_ID}" \
+            --total-lotes "${TOTAL_LOTES}"
+
+      - name: Procesar lote de experiencias
+        id: procesar_lote
+        if: github.event.action == 'ge_publicar_experiencias'
+        run: |
+          python3 "$RUNNER_TEMP/sync_experiencias.py" lote \
+            --state-dir .sync-state \
+            --sync-id "${SYNC_ID}" \
+            --lote-index "${LOTE_INDEX}" \
+            --total-lotes "${TOTAL_LOTES:-0}" \
+            --payload-file "$RUNNER_TEMP/payload.json" \
+            --final-output "$RUNNER_TEMP/experiencias.final.json" \
+            --completed-marker "$RUNNER_TEMP/sync.completo"
+          if [ -f "$RUNNER_TEMP/sync.completo" ]; then
+            echo "completed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "completed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Guardar estado de sincronización
+        run: |
+          git add .sync-state
+          if git diff --cached --quiet; then
+            echo "Sin cambios en el estado de sincronización."
+            exit 0
+          fi
+          git commit -m "Actualizar estado de sincronización ${SYNC_ID}"
+          for intento in 1 2 3 4 5; do
+            if git push origin sync-state; then
+              exit 0
+            fi
+            echo "Conflicto publicando sync-state, reintentando (${intento})…"
+            git fetch origin sync-state
+            git rebase origin/sync-state || { git rebase --abort; git reset --hard origin/sync-state; exit 1; }
+            sleep $((intento * 3))
+          done
+          echo "No fue posible publicar el estado de sincronización tras varios intentos." >&2
+          exit 1
+
+      - name: Publicar conjunto completo en main
+        if: steps.procesar_lote.outputs.completed == 'true'
+        run: |
+          git checkout main
+          cp "$RUNNER_TEMP/experiencias.final.json" data/experiencias.json
           git add data/experiencias.json
-          git diff --cached --quiet || git commit -m "Sincronizar experiencias públicas autorizadas"
-          git fetch origin main
-          git rebase origin/main
-          git push origin HEAD:main
+          if git diff --cached --quiet; then
+            echo "El conjunto consolidado es idéntico al publicado; nada que confirmar."
+            exit 0
+          fi
+          git commit -m "Sincronizar experiencias públicas autorizadas (sync ${SYNC_ID})"
+          for intento in 1 2 3 4 5; do
+            if git push origin main; then
+              exit 0
+            fi
+            echo "Conflicto publicando main, reintentando (${intento})…"
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort; exit 1; }
+            sleep $((intento * 3))
+          done
+          echo "No fue posible publicar data/experiencias.json tras varios intentos." >&2
+          exit 1
