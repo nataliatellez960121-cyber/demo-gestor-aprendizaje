@@ -23,7 +23,7 @@ jobs:
           PAYLOAD_JSON: ${{ toJson(github.event.client_payload) }}
         run: |
           python3 - <<'PY'
-          import json, os, re, sys
+          import json, os, re
           from pathlib import Path
 
           payload = json.loads(os.environ["PAYLOAD_JSON"])
@@ -40,7 +40,7 @@ jobs:
               if isinstance(value, list):
                   value = ", ".join(filter(None, (plain(x) for x in value)))
               value = "" if value is None else str(value)
-              return re.sub(r"\\s+", " ", value.replace("\\xa0", " ")).strip().rstrip(";").strip()
+              return re.sub(r"\s+", " ", value.replace("\u00a0", " ")).strip().rstrip(";").strip()
 
           unique = {}
           for item in raw:
@@ -54,7 +54,7 @@ jobs:
 
           records = sorted(unique.values(), key=lambda x: x["titulo"].casefold())
           Path("data/experiencias.json").write_text(
-              json.dumps(records, ensure_ascii=False, indent=2) + "\\n",
+              json.dumps(records, ensure_ascii=False, indent=2) + "\n",
               encoding="utf-8"
           )
           print(f"Conjunto público reconstruido: {len(records)} historias únicas.")
