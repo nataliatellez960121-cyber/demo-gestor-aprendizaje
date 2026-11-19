@@ -24,6 +24,16 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verificar archivos requeridos
+        run: |
+          echo "Directorio actual: $PWD"
+          ls -la
+          ls -la scripts
+          test -f scripts/sync_experiencias.py
 
       - name: Validar datos del evento
         id: validar
