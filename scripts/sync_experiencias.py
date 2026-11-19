@@ -21,7 +21,7 @@ import re
 import sys
 from pathlib import Path
 
-PUBLIC_FIELDS = ("titulo", "resumen", "historia", "tipo", "metodologia", "unidad")
+PUBLIC_FIELDS = ("titulo", "resumen", "historia", "tipo", "metodologia", "unidad", "autores", "correoContacto")
 REQUIRED_FIELDS = ("titulo", "resumen", "historia")
 
 _VALUE_PATTERN = re.compile(r"""['"]Value['"]\s*:\s*['"](.*?)['"]\s*[,}]""")
@@ -82,7 +82,7 @@ def normalize_value(value) -> str:
 
 
 def normalize_record(raw: dict) -> dict:
-    """Devuelve únicamente los seis campos públicos, normalizados a texto plano."""
+    """Devuelve los campos públicos, incluidos autores y correo de contacto, normalizados a texto plano."""
     return {field: normalize_value(raw.get(field, "")) for field in PUBLIC_FIELDS}
 
 
