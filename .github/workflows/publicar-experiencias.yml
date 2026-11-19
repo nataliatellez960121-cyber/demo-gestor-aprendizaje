@@ -7,8 +7,10 @@ on:
 permissions:
   contents: write
 
+# Cada lote tiene su propio grupo. Así GitHub no cancela los eventos pendientes
+# de otros lotes de la misma sincronización.
 concurrency:
-  group: publicar-experiencias
+  group: publicar-experiencias-${{ github.event.client_payload.sync_id }}-${{ github.event.client_payload.lote_index || github.event.action }}
   cancel-in-progress: false
 
 env:
@@ -25,30 +27,26 @@ jobs:
 
       - name: Validar datos del evento
         run: |
-          if [ -z "${SYNC_ID}" ]; then
-            echo "Power Automate debe enviar client_payload.sync_id en todo evento de sincronización." >&2
+          if [ -z "$SYNC_ID" ]; then
+            echo "Falta client_payload.sync_id." >&2
             exit 1
           fi
-          if [ "${{ github.event.action }}" = "ge_iniciar_sincronizacion" ] && [ -z "${TOTAL_LOTES}" ]; then
-            echo "ge_iniciar_sincronizacion debe incluir client_payload.total_lotes." >&2
-            exit 1
+          if [ "${{ github.event.action }}" = "ge_publicar_experiencias" ]; then
+            if [ -z "$LOTE_INDEX" ] || [ -z "$TOTAL_LOTES" ]; then
+              echo "El lote debe incluir lote_index y total_lotes." >&2
+              exit 1
+            fi
           fi
-          if [ "${{ github.event.action }}" = "ge_publicar_experiencias" ] && [ -z "${LOTE_INDEX}" ]; then
-            echo "ge_publicar_experiencias debe incluir client_payload.lote_index." >&2
-            exit 1
-          fi
-          echo "Evento ${{ github.event.action }} · sync_id=${SYNC_ID} · lote=${LOTE_INDEX:-N/A} · total_lotes=${TOTAL_LOTES:-N/A}"
 
-      - name: Congelar script de sincronización fuera del repositorio
-        run: cp scripts/sync_experiencias.py "$RUNNER_TEMP/sync_experiencias.py"
-
-      - name: Guardar payload del lote fuera del repositorio
+      - name: Guardar payload del lote
         if: github.event.action == 'ge_publicar_experiencias'
         env:
           PAYLOAD_JSON: ${{ toJson(github.event.client_payload) }}
-        run: echo "$PAYLOAD_JSON" > "$RUNNER_TEMP/payload.json"
+        run: |
+          printf '%s' "$PAYLOAD_JSON" > "$RUNNER_TEMP/payload.json"
 
-      - name: Cambiar a la rama de estado de sincronización (sync-state)
+      - name: Preparar rama de estado
+        if: github.event.action == 'ge_publicar_experiencias'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -59,73 +57,75 @@ jobs:
             git checkout --orphan sync-state
             git rm -rf . >/dev/null 2>&1 || true
           fi
-          mkdir -p .sync-state
+          mkdir -p ".sync-state/$SYNC_ID"
 
-      - name: Reiniciar sincronización
-        if: github.event.action == 'ge_iniciar_sincronizacion'
-        run: |
-          python3 "$RUNNER_TEMP/sync_experiencias.py" iniciar \
-            --state-dir .sync-state \
-            --sync-id "${SYNC_ID}" \
-            --total-lotes "${TOTAL_LOTES}"
-
-      - name: Procesar lote de experiencias
-        id: procesar_lote
+      - name: Guardar lote independiente
         if: github.event.action == 'ge_publicar_experiencias'
         run: |
-          python3 "$RUNNER_TEMP/sync_experiencias.py" lote \
-            --state-dir .sync-state \
-            --sync-id "${SYNC_ID}" \
-            --lote-index "${LOTE_INDEX}" \
-            --total-lotes "${TOTAL_LOTES:-0}" \
-            --payload-file "$RUNNER_TEMP/payload.json" \
-            --final-output "$RUNNER_TEMP/experiencias.final.json" \
-            --completed-marker "$RUNNER_TEMP/sync.completo"
-          if [ -f "$RUNNER_TEMP/sync.completo" ]; then
-            echo "completed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "completed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Guardar estado de sincronización
-        run: |
-          git add .sync-state
-          if git diff --cached --quiet; then
-            echo "Sin cambios en el estado de sincronización."
-            exit 0
-          fi
-          git commit -m "Actualizar estado de sincronización ${SYNC_ID}"
-          for intento in 1 2 3 4 5; do
+          python3 scripts/sync_experiencias.py lote \
+            --state-dir ".sync-state/$SYNC_ID" \
+            --lote-index "$LOTE_INDEX" \
+            --payload-file "$RUNNER_TEMP/payload.json"
+          git add ".sync-state/$SYNC_ID/lote_$(printf '%04d' "$LOTE_INDEX").json"
+          git commit -m "Guardar lote $LOTE_INDEX de sincronización $SYNC_ID"
+          for intento in 1 2 3 4 5 6 7 8; do
             if git push origin sync-state; then
               exit 0
             fi
-            echo "Conflicto publicando sync-state, reintentando (${intento})…"
             git fetch origin sync-state
-            git rebase origin/sync-state || { git rebase --abort; git reset --hard origin/sync-state; exit 1; }
-            sleep $((intento * 3))
+            git rebase origin/sync-state || { git rebase --abort; git reset --hard origin/sync-state; }
+            sleep $((intento * 2))
           done
-          echo "No fue posible publicar el estado de sincronización tras varios intentos." >&2
+          echo "No se pudo guardar el lote en sync-state." >&2
           exit 1
 
-      - name: Publicar conjunto completo en main
-        if: steps.procesar_lote.outputs.completed == 'true'
+      - name: Esperar a que estén todos los lotes
+        if: github.event.action == 'ge_publicar_experiencias' && fromJSON(env.LOTE_INDEX) == (fromJSON(env.TOTAL_LOTES) - 1)
         run: |
-          git checkout main
+          completos=false
+          for intento in $(seq 1 60); do
+            git fetch origin sync-state
+            git reset --hard origin/sync-state
+            faltantes=0
+            for indice in $(seq 0 $((TOTAL_LOTES - 1))); do
+              archivo=".sync-state/$SYNC_ID/lote_$(printf '%04d' "$indice").json"
+              [ -f "$archivo" ] || faltantes=$((faltantes + 1))
+            done
+            if [ "$faltantes" -eq 0 ]; then
+              completos=true
+              break
+            fi
+            echo "Aún faltan $faltantes lotes. Intento $intento/60."
+            sleep 10
+          done
+          if [ "$completos" != true ]; then
+            echo "Tiempo agotado: no llegaron todos los lotes." >&2
+            exit 1
+          fi
+          python3 scripts/sync_experiencias.py finalizar \
+            --state-dir ".sync-state/$SYNC_ID" \
+            --total-lotes "$TOTAL_LOTES" \
+            --final-output "$RUNNER_TEMP/experiencias.final.json"
+
+      - name: Publicar conjunto completo en main
+        if: github.event.action == 'ge_publicar_experiencias' && fromJSON(env.LOTE_INDEX) == (fromJSON(env.TOTAL_LOTES) - 1)
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
           cp "$RUNNER_TEMP/experiencias.final.json" data/experiencias.json
           git add data/experiencias.json
           if git diff --cached --quiet; then
-            echo "El conjunto consolidado es idéntico al publicado; nada que confirmar."
+            echo "El conjunto publicado ya está actualizado."
             exit 0
           fi
-          git commit -m "Sincronizar experiencias públicas autorizadas (sync ${SYNC_ID})"
-          for intento in 1 2 3 4 5; do
+          git commit -m "Sincronizar experiencias públicas autorizadas ($SYNC_ID)"
+          for intento in 1 2 3 4 5 6 7 8; do
             if git push origin main; then
               exit 0
             fi
-            echo "Conflicto publicando main, reintentando (${intento})…"
             git fetch origin main
             git rebase origin/main || { git rebase --abort; exit 1; }
-            sleep $((intento * 3))
+            sleep $((intento * 2))
           done
-          echo "No fue posible publicar data/experiencias.json tras varios intentos." >&2
+          echo "No se pudo publicar data/experiencias.json." >&2
           exit 1
