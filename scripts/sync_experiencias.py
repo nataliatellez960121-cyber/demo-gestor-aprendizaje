@@ -198,13 +198,22 @@ def consolidate_state(state_dir: Path) -> list:
 # ---------------------------------------------------------------------------
 
 def _parse_payload(raw_text: str):
+    """Acepta client_payload completo y experiencias como array o JSON serializado."""
     data = json.loads(raw_text)
     if isinstance(data, str):
         data = json.loads(data)
     if isinstance(data, dict):
         data = data.get("experiencias", [])
+    # Power Automate puede enviar experiencias como string JSON dentro del payload.
+    if isinstance(data, str):
+        data = json.loads(data)
+    if isinstance(data, dict):
+        data = data.get("experiencias", [])
     if not isinstance(data, list):
-        raise SystemExit("El contenido del lote debe ser una lista JSON de experiencias.")
+        raise SystemExit(
+            "El contenido del lote debe ser una lista JSON de experiencias. "
+            f"Tipo recibido: {type(data).__name__}."
+        )
     return data
 
 
