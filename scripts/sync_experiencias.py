@@ -33,15 +33,34 @@ def unwrap(value):
                 return match.group(1)
     return value
 
+
 def normalize_value(value):
     if value is None:
         return ""
+
+    if isinstance(value, str):
+        s = value.strip()
+        if s.startswith("["):
+            try:
+                parsed = json.loads(s)
+                if isinstance(parsed, list):
+                    value = parsed
+            except (ValueError, json.JSONDecodeError):
+                pass
+
     if isinstance(value, list):
-        return ", ".join(x for x in (normalize_value(v) for v in value) if x)
+        return ", ".join(
+            x for x in (normalize_value(v) for v in value) if x
+        )
+
     value = unwrap(value)
+
     if isinstance(value, dict):
         value = value.get("Value", value.get("value", ""))
-    return re.sub(r"\s+", " ", str(value).replace("\xa0", " ")).strip().rstrip(";").strip()
+
+    return re.sub(
+        r"\s+", " ", str(value).replace("\xa0", " ")
+    ).strip().rstrip(";").strip()
 
 def normalize_record(raw):
     return {field: normalize_value(raw.get(field, "")) for field in PUBLIC_FIELDS}
