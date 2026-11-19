@@ -95,7 +95,7 @@ jobs:
           existing = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
           by_key = {}
           for old in existing:
-              key = str(old.get("id") or "").strip() or "titulo:" + clean(old.get("titulo")).casefold()
+              key = "titulo:" + clean(old.get("titulo")).casefold()
               by_key[key] = {f: clean(old.get(f, "")) for f in fields}
           for raw in data:
               if not isinstance(raw, dict):
@@ -103,7 +103,7 @@ jobs:
               record = {f: clean(raw.get(f, "")) for f in fields}
               if not record["titulo"] or not record["resumen"] or not record["historia"]:
                   raise SystemExit("La experiencia no tiene título, resumen o historia.")
-              key = str(raw.get("id") or raw.get("Id") or "").strip() or "titulo:" + record["titulo"].casefold()
+              key = "titulo:" + record["titulo"].casefold()
               by_key[key] = record
           result = sorted(by_key.values(), key=lambda x: x["titulo"].casefold())
           path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
