@@ -35,6 +35,9 @@ jobs:
           ls -la scripts
           test -f scripts/sync_experiencias.py
 
+      - name: Conservar script de sincronización
+        run: cp scripts/sync_experiencias.py "$RUNNER_TEMP/sync_experiencias.py"
+
       - name: Validar datos del evento
         id: validar
         run: |
@@ -82,7 +85,7 @@ jobs:
       - name: Guardar lote independiente
         if: github.event.action == 'ge_publicar_experiencias'
         run: |
-          python3 scripts/sync_experiencias.py lote \
+          python3 "$RUNNER_TEMP/sync_experiencias.py" lote \
             --state-dir ".sync-state/$SYNC_ID" \
             --lote-index "$LOTE_INDEX" \
             --payload-file "$RUNNER_TEMP/payload.json"
@@ -95,7 +98,7 @@ jobs:
             if git ls-remote --exit-code --heads origin sync-state >/dev/null 2>&1; then
               git fetch origin sync-state
               git checkout -B sync-state origin/sync-state
-              python3 scripts/sync_experiencias.py lote \
+              python3 "$RUNNER_TEMP/sync_experiencias.py" lote \
                 --state-dir ".sync-state/$SYNC_ID" \
                 --lote-index "$LOTE_INDEX" \
                 --payload-file "$RUNNER_TEMP/payload.json"
@@ -130,7 +133,7 @@ jobs:
             echo "Tiempo agotado: no llegaron todos los lotes." >&2
             exit 1
           fi
-          python3 scripts/sync_experiencias.py finalizar \
+          python3 "$RUNNER_TEMP/sync_experiencias.py" finalizar \
             --state-dir ".sync-state/$SYNC_ID" \
             --total-lotes "$TOTAL_LOTES" \
             --final-output "$RUNNER_TEMP/experiencias.final.json"
