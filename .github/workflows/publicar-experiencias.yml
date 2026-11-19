@@ -89,7 +89,7 @@ jobs:
                   v = v.get("Value", v.get("value", ""))
               if isinstance(v, list):
                   v = ", ".join(str(clean(x)) for x in v if clean(x) not in ("", None))
-              return re.sub(r"\\s+", " ", str(v or "").replace("\\xa0", " ")).strip()
+              return re.sub(r"\s+", " ", str(v or "").replace("\xa0", " ")).strip()
           path = pathlib.Path("data/experiencias.json")
           path.parent.mkdir(parents=True, exist_ok=True)
           existing = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
